@@ -1,8 +1,8 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -89,19 +89,35 @@ public class opencv extends LinearOpMode {
     class SampleDetectionPipeline extends OpenCvPipeline {
         @Override
         public Mat processFrame(Mat input) {
+            //make a function that filters out the other colors, so the telemetry only displays 1 color
             // Preprocess the frame to detect red regions
             Mat redMask = preprocessFrame(input, SampleColor.RED);
             drawLabels(input, redMask, SampleColor.RED);
-
-//            Mat blueMask = preprocessFrame(input, SampleColor.BLUE);
-//            drawLabels(input, blueMask, SampleColor.BLUE);
 //
-//            Mat yellowMask = preprocessFrame(input, SampleColor.YELLOW);
-//            drawLabels(input, yellowMask, SampleColor.YELLOW);
+            Mat blueMask = preprocessFrame(input, SampleColor.BLUE);
+            drawLabels(input, blueMask, SampleColor.BLUE);
+
+            Mat yellowMask = preprocessFrame(input, SampleColor.YELLOW);
+            drawLabels(input, yellowMask, SampleColor.YELLOW);
 
             return input;
         }
 
+        private Mat redProcessFrame(Mat input) {
+            Mat redMask = preprocessFrame(input, SampleColor.RED);
+            drawLabels(input, redMask, SampleColor.RED);
+            return input;
+        }
+        private Mat blueProcessFrame(Mat input) {
+            Mat blueMask = preprocessFrame(input, SampleColor.BLUE);
+            drawLabels(input, blueMask, SampleColor.BLUE);
+            return input;
+        }
+        private Mat yellowProcessFrame(Mat input) {
+            Mat yellowMask = preprocessFrame(input, SampleColor.YELLOW);
+            drawLabels(input, yellowMask, SampleColor.YELLOW);
+            return input;
+        }
         private void drawLabels(Mat input, Mat mask, SampleColor color) {
             // Find contours of the detected red regions
             List<MatOfPoint> contours = new ArrayList<>();
@@ -146,64 +162,38 @@ public class opencv extends LinearOpMode {
         }
 
         private Mat preprocessFrame(Mat frame, SampleColor color) {
-            Mat hsvMat = new Mat();
-            Mat lowMat = new Mat();
-            Mat upperMat = new Mat();
-            Mat detectedMat = new Mat();
-
-            
-
-            Imgproc.cvtColor(frame, hsvMat, Imgproc.COLOR_RGB2HSV);
-            Scalar lowerLow = new Scalar(0);
-            Scalar lowerHigh = new Scalar(0);
-            Scalar upperLow = new Scalar(0);
-            Scalar upperHigh = new Scalar(0);
-
+            Mat hsvFrame = new Mat();
+            Imgproc.cvtColor(frame, hsvFrame, Imgproc.COLOR_RGB2HSV);
+            Scalar lower = new Scalar(0);
+            Scalar upper = new Scalar(0);
 
             switch (color) {
                 case RED:
-
-                    // 0-20
-                    // 330-360
-                    // 50%, 50%
-
-                    lowerLow = new Scalar(0, 125, 125);
-                    lowerHigh = new Scalar(10, 255, 255);
-                    upperLow = new Scalar(165, 125, 125);
-                    upperHigh = new Scalar(180, 255, 255);
+                    lower = new Scalar(80, 85, 100);
+                    upper = new Scalar(180, 255, 255);
                     break;
                 case BLUE:
-
-                    // 50%, 50%
-                    // 224-244
-
-                    lowerLow = new Scalar(112, 125, 25);
-                    lowerHigh = new Scalar(122, 255, 255);
-                    upperLow = new Scalar(112, 125, 125);
-                    upperHigh = new Scalar(122, 255, 255);
+                    lower = new Scalar(90, 100, 100);
+                    upper = new Scalar(135, 215, 200);
                     break;
                 case YELLOW:
-                    //44-64
-                    // 50%, 50%
-
-                    lowerLow = new Scalar(22, 125, 125);
-                    lowerHigh = new Scalar(34, 255, 255);
-                    upperLow = new Scalar(22, 125, 125);
-                    upperHigh = new Scalar(34, 255, 255);
+                    //50-64
+                    //64-75
+                    //low = 0, 170, 80
+                    //high = 70, 255, 150
+                    lower = new Scalar(50, 84, 200);
+                    upper = new Scalar(59, 155, 204);
                     break;
             }
 
             Mat mask = new Mat();
-            Core.inRange(hsvMat, lowerLow, lowerHigh, lowMat);
-            Core.inRange(hsvMat, upperLow, upperHigh, upperMat);
-
-            Core.bitwise_or(lowMat, upperMat, detectedMat);
+            Core.inRange(hsvFrame, lower, upper, mask);
 
             Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel);
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, kernel);
 
-            return detectedMat;
+            return mask;
         }
 
         private MatOfPoint findLargestContour(List<MatOfPoint> contours) {
