@@ -103,21 +103,21 @@ public class opencv extends LinearOpMode {
             return input;
         }
 
-        private Mat redProcessFrame(Mat input) {
-            Mat redMask = preprocessFrame(input, SampleColor.RED);
-            drawLabels(input, redMask, SampleColor.RED);
-            return input;
-        }
-        private Mat blueProcessFrame(Mat input) {
-            Mat blueMask = preprocessFrame(input, SampleColor.BLUE);
-            drawLabels(input, blueMask, SampleColor.BLUE);
-            return input;
-        }
-        private Mat yellowProcessFrame(Mat input) {
-            Mat yellowMask = preprocessFrame(input, SampleColor.YELLOW);
-            drawLabels(input, yellowMask, SampleColor.YELLOW);
-            return input;
-        }
+//        private Mat redProcessFrame(Mat input) {
+//            Mat redMask = preprocessFrame(input, SampleColor.RED);
+//            drawLabels(input, redMask, SampleColor.RED);
+//            return input;
+//        }
+//        private Mat blueProcessFrame(Mat input) {
+//            Mat blueMask = preprocessFrame(input, SampleColor.BLUE);
+//            drawLabels(input, blueMask, SampleColor.BLUE);
+//            return input;
+//        }
+//        private Mat yellowProcessFrame(Mat input) {
+//            Mat yellowMask = preprocessFrame(input, SampleColor.YELLOW);
+//            drawLabels(input, yellowMask, SampleColor.YELLOW);
+//            return input;
+//        }
         private void drawLabels(Mat input, Mat mask, SampleColor color) {
             // Find contours of the detected red regions
             List<MatOfPoint> contours = new ArrayList<>();
@@ -173,16 +173,16 @@ public class opencv extends LinearOpMode {
                     upper = new Scalar(180, 255, 255);
                     break;
                 case BLUE:
-                    lower = new Scalar(90, 100, 100);
-                    upper = new Scalar(135, 215, 200);
+//                    lower = new Scalar(90, 100, 100);
+//                    upper = new Scalar(135, 215, 200);
+                    lower = new Scalar(80, 85, 90);
+                    upper = new Scalar(150, 215, 200);
                     break;
                 case YELLOW:
-                    //50-64
-                    //64-75
-                    //low = 0, 170, 80
-                    //high = 70, 255, 150
-                    lower = new Scalar(50, 84, 200);
-                    upper = new Scalar(59, 155, 204);
+                    //lower = 40, 85, 100
+                    //upper = 60, 86, 79
+                    lower = new Scalar(15, 50, 70);
+                    upper = new Scalar(24, 255, 255);
                     break;
             }
 
