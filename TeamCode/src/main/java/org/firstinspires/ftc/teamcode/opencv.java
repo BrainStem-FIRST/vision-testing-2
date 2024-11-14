@@ -20,7 +20,6 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,12 @@ public class opencv extends LinearOpMode {
     double cX = 0;
     double cY = 0;
     double width = 0;
+    private final static double initialWidth = 64;
+    private final static  double initialYDistance = 5;
 
+    private double cameraOutputWidth = 0;
+    private double cameraYDistance = 0;
+    private double cameraOutputDistance = 0;
     private OpenCvCamera controlHubCam;  // Use OpenCvCamera class from FTC SDK
     private static final int CAMERA_WIDTH = 1280; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 720; // height of wanted camera resolution
@@ -41,6 +45,9 @@ public class opencv extends LinearOpMode {
     public static final double focalLength = 728;  // Replace with the focal length of the camera in pixels
 
     private static final double MIN_AREA_DETECTION = 2000;
+    private double distanceTosample;
+
+
 
     private enum SampleColor {
         RED,
@@ -219,6 +226,13 @@ public class opencv extends LinearOpMode {
     private static double getDistance(double width){
         double distance = (objectWidthInRealWorldUnits * focalLength) / width;
         return distance;
+    }
+    private double getYDistance(){
+        return (cameraOutputWidth*(initialYDistance/initialWidth));
+    }
+    private double getXDistance(){
+        return Math.sqrt(Math.pow(getDistance(cameraOutputWidth),2)
+                -Math.pow((getYDistance()),2));
     }
 
 
